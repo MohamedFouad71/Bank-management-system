@@ -27,6 +27,10 @@ public:
     void insertFirst(t value);
     void insertLast(t value);
     void insertAt(int index , t value);
+    void removefirst();
+    void removeLast();
+    void removeAt(int index);
+
 };
 
 

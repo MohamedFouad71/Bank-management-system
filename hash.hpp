@@ -1,4 +1,22 @@
+#pragma once
 #include <string>
+#include "DoublyLinkedList.hpp"
+#include "account.hpp"
+    
+extern DoublyLinkedList<account> hashTable[52][52];
+
+
+
+
+
+
+
+
+
+
+//##############################################################################################
+//                                      String Hashing
+//##############################################################################################
 
 
 /* 
@@ -33,7 +51,7 @@ int firstCharacterHashing(std::string &name){
 int sumHashing(std::string &key , int tableSize){
 
     int sum = 0;
-    for (size_t i = 0; i < key.size()){
+    for (size_t i = 0; i < key.length(); i++){
         sum += int(key.at(i));
     }
 
@@ -45,7 +63,7 @@ int sumHashing(std::string &key , int tableSize){
 int weigtedSumHashing(std::string &key , int tableSize){
 
     unsigned int sum = 0;
-    for (size_t i = 0; i < key.size(); i++){
+    for (size_t i = 0; i < key.length(); i++){
         sum += int(key.at(i)) * (i%5 + 1) ;
     }
 
