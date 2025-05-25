@@ -4,21 +4,21 @@
 
 #ifndef DOUBLYLINKEDLIST_H
 #define DOUBLYLINKEDLIST_H
-
-
+#include <string>
+#include "account.hpp"
 
 template <class t>
 class DoublyLinkedList {
-private:
 
     struct node {
-        t value;
-        node *next, *previous;
-    };
+    t value;
+    node *next, *previous;
+};
+
+public:
     int length;
     node *first , *last;
 
-public:
     DoublyLinkedList();
     ~DoublyLinkedList();
     bool isEmpty() const;
@@ -30,11 +30,12 @@ public:
     void removefirst();
     void removeLast();
     void removeAt(int index);
+    t twoPointerSearch(t item);
 
 };
 
 
 
-
+#include "specialListDefinition.tpp"
 #include "DoublyLinkedList.tpp"
 #endif //DOUBLYLINKEDLIST_H

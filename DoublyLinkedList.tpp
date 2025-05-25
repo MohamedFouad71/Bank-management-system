@@ -1,5 +1,7 @@
 #pragma once
 #include <iostream>
+#include "account.hpp"
+#include "DoublyLinkedList.hpp"
 
 // Make Sure To check all the variable for each edited node
 // first, last , previous , next , value , length [## 6 vars]
@@ -93,7 +95,7 @@ void DoublyLinkedList<t>::insertAt(int index, t val) {
         if (index == 0) {
                 insertFirst(val);
                 return;
-        } else if (index == length - 1) {
+        } else if (index == length) {
                 insertLast(val);
                 return;
         }
@@ -134,7 +136,7 @@ template <typename t>
 void DoublyLinkedList<t>::removefirst(){
 
     if (isEmpty()){
-    std::cerr<<"List is Empty!!";
+    std::cerr<<"List is Empty!!\n";
     return;
     }
     else if (length == 1){
@@ -155,7 +157,7 @@ template <typename t>
 void DoublyLinkedList<t>::removeLast(){
     
     if (isEmpty()){
-        std::cerr<<"List is Empty!!";
+        std::cerr<<"List is Empty!!\n";
         return;
     }
     else if (length == 1){
@@ -176,7 +178,7 @@ template <typename t>
 void DoublyLinkedList<t>::removeAt(int index){
 
         if (isEmpty()){
-            std::cerr<<"List is Empty!!";
+            std::cerr<<"List is Empty!!\n";
             return;
         }
         else if (index < 0 || index >= length ) {
@@ -207,7 +209,7 @@ void DoublyLinkedList<t>::removeAt(int index){
         else {
 
             current = first;
-            for (size_t i = 0; i <index; i++){
+            for (size_t i = 0; i <index ; i++){
                 current = current->next; // untill it reaches index
             }
 
@@ -220,3 +222,52 @@ void DoublyLinkedList<t>::removeAt(int index){
         delete current;
         --length;
 }
+
+template <typename t>
+t DoublyLinkedList<t>::twoPointerSearch(t item){
+        
+        node *forwardSearcher = first , *backwardSearcher = last;
+        unsigned int counter = 0;
+        if(isEmpty()){
+                throw std::runtime_error("Cannot search an empty list");
+        }
+
+        while( counter != length/2 + 1) {
+                
+                if (item == forwardSearcher-> value){
+                        return forwardSearcher->value;
+                }
+                else if (item == backwardSearcher -> value){
+                        return backwardSearcher -> value;
+                }
+                forwardSearcher = forwardSearcher->next;
+                backwardSearcher = backwardSearcher->previous;
+                
+                ++counter;
+        }
+
+        throw std::runtime_error("Item not found");
+}
+
+// template <>
+// user DoublyLinkedList<user>::twoPointerSearch(std::string name) {
+
+//     if (this->isEmpty())
+//         throw std::runtime_error("List is empty");
+
+//     node *forward = this->first;
+//     node *backward = this->last;
+
+//     for (int i = 0; i <= this->length / 2; ++i) {
+
+//         if (forward->value.getUserName() == name)
+//             return forward->value;
+//         if (backward->value.getUserName() == name)
+//             return backward->value;
+
+//         forward = forward->next;
+//         backward = backward->previous;
+//     }
+
+//     throw std::runtime_error("User not found");
+// }

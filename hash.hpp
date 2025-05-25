@@ -2,15 +2,9 @@
 #include <string>
 #include "DoublyLinkedList.hpp"
 #include "account.hpp"
-    
-extern DoublyLinkedList<account> hashTable[52][52];
 
-
-
-
-
-
-
+extern DoublyLinkedList<admin> adminHashTable [100];
+extern DoublyLinkedList<user> hashTable[52][52];
 
 
 
@@ -90,4 +84,8 @@ int mazeHashing(std::string &name , int characterPosition){
     else {
         return int(character) - 71 ; // Start from index 26 for more searching effectioncy
     }
+}
+
+int adminHash(admin adminstrator){
+    return adminstrator.getUid();
 }

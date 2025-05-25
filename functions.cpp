@@ -1,13 +1,23 @@
 #include "functions.hpp"
 #include "termcolor.hpp"
 #include "hash.hpp"
+#include <windows.h>
 #include <iostream>
 #include <string>
 #include <limits> // Added for input validation
 
 using namespace std;
 
-DoublyLinkedList<account> hashTable[52][52];
+DoublyLinkedList <user> userHashTable[52][52];
+DoublyLinkedList <admin> adminHashTable [100];
+
+void clearScreen() {
+#ifdef _WIN32
+    system("cls");
+#else
+    std::cout << "\033[2J\033[1;1H";
+#endif
+}
 
 void create(bool adminstrator) {
 
@@ -31,6 +41,7 @@ void create(bool adminstrator) {
         getline(cin , username);
     }
 
+    
     string password;
     cout <<termcolor::blue<<"\nTry including uppercase, lowercase, special characters and numbers for more protection\n";
     cout << termcolor::blue << "Password: "<<termcolor::bright_blue;
@@ -45,14 +56,28 @@ void create(bool adminstrator) {
     }
 
     // adding to hash table
-    int index1 = mazeHashing(username, 0) , index2 = mazeHashing(username, 1);
-    hashTable [index1][index2].insertLast(newAccount);
-    cout<<termcolor::green<<"\nUser Created Successfully\n"<<termcolor::reset;
+
+    if (adminstrator) {
+
+        admin newAdmin(username, password);
+        int index = adminHash(newAdmin);
+        adminHashTable [index].insertLast(newAdmin);
+        
+    } else {
+
+        int index1 = mazeHashing(username, 0) , index2 = mazeHashing(username, 1);
+        user newUser = user(username, password);
+        userHashTable [index1][index2].insertLast(newUser);
+    }
     
+    
+    clearScreen();
+    cout<<termcolor::green<<"\nUser Created Successfully\n"<<termcolor::reset;
+    Sleep(3000);
 }
 
 void login() {
-    while (true) {
+    do {
         cout << termcolor::blue << "\nWelcome to Our Bank\n\n";
         cout << termcolor::yellow << "1 - Create user\n";
         cout << termcolor::yellow << "2 - Login as user\n";
@@ -84,6 +109,54 @@ void login() {
                 return;
             default:
                 cerr << termcolor::red << "Invalid choice!\n" << termcolor::reset;
-        }
+        } 
+    } while (true);
+}
+
+void userLogin()
+{
+    cout<<termcolor::green<<"User Login";
+    cout << termcolor::blue<<"Username: "<<termcolor::bright_blue;
+    string uname;
+    getline(cin, uname);
+    int index1 = mazeHashing(uname, 1), index2 =mazeHashing(uname , 2);
+    user loggedInUser;
+    try
+    {
+        DoublyLinkedList<user> searchedList = userHashTable[index1][index2];
+        loggedInUser = searchedList.twoPointerSearch(uname) ;
     }
+    catch(const exception& e)
+    {
+        cerr <<termcolor::red<<"Username Not Found\n"<<termcolor::reset;
+        return;
+    }
+
+    string password;
+
+    for (size_t counter = 0; counter<5 ; counter++){
+
+        cout<<termcolor::blue<<"Password : ";
+        getline(cin, password);
+        if (password == loggedInUser.getPassword()){
+
+            for (size_t i = 0; i < 2; i++){
+                clearScreen();
+                cout<<termcolor::green<<"Successfully Logged In !!\n";
+                Sleep(1000);
+            }
+            cout<<termcolor::green<<"Successfully Logged In !!\n";
+
+            return;
+        }
+
+        cout<<termcolor::red<<"wrong Password , Try again\n";
+        cout<<termcolor::blue<<"Password : ";
+        getline(cin, password);
+
+    }
+
+    // three wrong attempts
+    std::cout<<termcolor::bold<<termcolor::red<<"Too Many Wrong attempts!!\n"<<termcolor::reset;
+
 }
