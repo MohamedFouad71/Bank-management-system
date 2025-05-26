@@ -13,8 +13,8 @@ class account{
     account(std::string name , std::string pass);
     virtual ~account();
     int getUid();
-    std::string getUserName();
-    std::string getPassword();
+    std::string getUserName() const;
+    std::string getPassword() const;
 
 };
 

@@ -34,12 +34,12 @@ int account::getUid()
     return uid;
 }
 
-std::string account::getUserName()
+std::string account::getUserName ()const
 {
     return userName;
 }
 
-std::string account::getPassword()
+std::string account::getPassword ()const
 {
     return password;
 }
@@ -131,34 +131,63 @@ void user::withdraw(){
     }
 }
 
-void user::changeUsername()
+void user::changeUsername() // Comments Were Written by AI
 {
-    cout<<termcolor::blue<<"New Username : "<<termcolor::bright_blue<<endl;
-    string uname;
-    cin>>uname;
-    
-    if (uname.length() < 6){
-        cerr<<termcolor::red<<"\nToo Short\n";
-        return;
-    }
-    else{
-        cerr << termcolor::red << "\nError: First two characters must be alphabetic\n" ;
+    // Store the current (old) username
+    string oldName = userName;
+
+    // Prompt for new username
+    cout << termcolor::blue << "New Username: " << termcolor::bright_blue;
+    string newName;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin >> newName;
+
+    // Check for minimum length
+    if (newName.length() < 6) {
+        cerr << termcolor::red << "\nToo Short\n" << termcolor::reset;
         return;
     }
 
-    try
-    {
-        int index1 = mazeHashing(uname, 0), index2 =mazeHashing(uname , 1);
-        DoublyLinkedList<user> *searchedList = &(userHashTable[index1][index2]);
-        searchedList->searchAccount(uname);
-        cerr<<termcolor::red<<"Username Already Used!!\n";
-    }
-    catch(...) // if not found
-    {
-        this->userName = uname;
+    // Check if the first two characters are alphabetic
+    if (!isalpha(newName[0]) || !isalpha(newName[1])) {
+        cerr << termcolor::red << "\nError: First two characters must be alphabetic\n" << termcolor::reset;
+        return;
     }
 
+    // Check if the new username already exists in the hash table
+    try {
+        int newI1 = mazeHashing(newName, 0);
+        int newI2 = mazeHashing(newName, 1);
+        DoublyLinkedList<user>* targetList = &userHashTable[newI1][newI2];
+
+        // Try to find the user by new name — will throw if not found
+        targetList->searchAccount(newName);
+
+        // If it doesn't throw, that means username already exists
+        cerr << termcolor::red << "Username Already Used!!\n" << termcolor::reset;
+        return;
+    }
+    catch (...) {
+        // Username is available — proceed with the change
+
+        // 1. Remove the user from the old position in the hash table
+        int oldI1 = mazeHashing(oldName, 0);
+        int oldI2 = mazeHashing(oldName, 1);
+        DoublyLinkedList<user>* oldList = &userHashTable[oldI1][oldI2];
+        int userIndex = oldList->linearSearch(*this);
+        oldList->removeAt(userIndex);
+
+        // 2. Update the username
+        this->userName = newName;
+
+        // 3. Insert the user back into the correct position for the new name
+        int newI1 = mazeHashing(newName, 0);
+        int newI2 = mazeHashing(newName, 1);
+        DoublyLinkedList<user>* newList = &userHashTable[newI1][newI2];
+        newList->insertLast(*this);
+    }
 }
+
 
 void user::changePassword()
 {
@@ -196,4 +225,5 @@ void user::viewInfo() const{
          << "Balance : " << balance << endl
          << "=========================================================\n"
          << termcolor::reset;
+
 }

@@ -251,6 +251,24 @@ t DoublyLinkedList<t>::twoPointerSearch(t item){
 }
 
 template <class t>
+int DoublyLinkedList<t>::linearSearch(const t &item)
+{
+    node* current = first;
+    int index = 0;
+
+    while (current != nullptr) {
+        if (current->value.getUserName() == item.getUserName()) {
+            return index;
+        }
+        current = current->next;
+        index++;
+    }
+
+    return -1; // not found
+}
+
+
+template <class t>
 user* DoublyLinkedList<t>::searchAccount(const std::string& username) {
 
     if (isEmpty()) {

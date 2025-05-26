@@ -31,7 +31,9 @@ public:
     void removeLast();
     void removeAt(int index);
     t twoPointerSearch(t item);
-    user* searchAccount(const std::string& username);
+    int linearSearch(const t &item);
+    void insertAfter();
+    user* searchAccount(const std::string &username);
 };
 
 

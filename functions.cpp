@@ -66,7 +66,7 @@ void userLogin()
     }
 
     // Uname Input
-    cout << termcolor::blue<<"Username: "<<termcolor::bright_blue;
+    cout << termcolor::blue<<"Username : "<<termcolor::bright_blue;
     string uname;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getline(cin, uname);
@@ -179,72 +179,66 @@ bool userMainPage(user *LoggedInUser){
     }
     return true ;
 }
+
 void create(bool adminstrator) {
 
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
     string username;
-    cout << termcolor::blue<<"Username: "<<termcolor::bright_blue;
-    getline(cin, username);
+    while (true) {
+        cout << termcolor::blue << "Username: " << termcolor::bright_blue;
+        getline(cin, username);
 
-    // Validate username - first two chars must be letters
-    bool nameFound = false;
-    while (username.length() < 6 || !isalpha(username[0]) || !isalpha(username[1]) || nameFound) {
-    nameFound = false;
-    try
-    {
-        int index1 = mazeHashing(username, 0), index2 =mazeHashing(username , 1);
-        DoublyLinkedList<user> *searchedList = &(userHashTable[index1][index2]);
-        searchedList->searchAccount(username);
-        cerr<<termcolor::red<<"Username Already Used!!\n"<<termcolor::reset;
-        nameFound = true;
-    }
-    catch(...) // if not found
-    {
-        if (username.length() < 6){
-            cerr<<termcolor::red<<"\nToo Short\n";
-        }
-        else{
-            cerr << termcolor::red << "\nError: First two characters must be alphabetic\n" ;
+        if (username.length() < 6) {
+            cerr << termcolor::red << "\nToo short: Username must be at least 6 characters\n";
+            continue;
         }
 
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout << termcolor::blue<<"Username: "<<termcolor::bright_blue;
-        getline(cin , username);
+        if (!isalpha(username[0]) || !isalpha(username[1])) {
+            cerr << termcolor::red << "\nError: First two characters must be alphabetic\n";
+            continue;
+        }
+
+        // Check if username already exists
+        int index1 = mazeHashing(username, 0), index2 = mazeHashing(username, 1);
+        try {
+            user* existingUser = userHashTable[index1][index2].searchAccount(username);
+            // If found, it means username already exists
+            cerr << termcolor::red << "Username already exists\n" << termcolor::reset;
+            continue;
+        } catch (...) {
+            // Not found: safe to proceed
+            break;
+        }
     }
 
-    }
-
-    
+    // Password input
     string password;
-    cout <<termcolor::blue<<"\nTry including uppercase, lowercase, special characters and numbers for more protection\n";
-    cout << termcolor::blue << "Password: "<<termcolor::bright_blue;
-    getline(cin, password);
-    
-    // Validate password length
-    while (password.size() < 8) {
-        cerr << termcolor::red << "\nShort password, minimum 8 characters\n";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout <<termcolor::blue<< "Password: "<<termcolor::bright_blue;
+    cout << termcolor::blue << "\nTip: Include uppercase, lowercase, numbers, and special characters for better security.\n";
+    while (true) {
+        cout << termcolor::blue << "Password: " << termcolor::bright_blue;
         getline(cin, password);
+
+        if (password.length() < 8) {
+            cerr << termcolor::red << "\nShort password: Minimum 8 characters required\n";
+            continue;
+        }
+
+        break;
     }
 
-    // adding to hash table
-
+    // Add to hash table
     if (adminstrator) {
-
         admin newAdmin(username, password);
         int index = adminHash(newAdmin);
-        adminHashTable [index].insertLast(newAdmin);
-        
+        adminHashTable[index].insertLast(newAdmin);
     } else {
-
-        int index1 = mazeHashing(username, 0) , index2 = mazeHashing(username, 1);
-        user newUser = user(username, password);
-        userHashTable [index1][index2].insertLast(newUser);
+        user newUser(username, password);
+        int index1 = mazeHashing(username, 0), index2 = mazeHashing(username, 1);
+        userHashTable[index1][index2].insertLast(newUser);
     }
-    
-    
+
     clearScreen();
-    cout<<termcolor::green<<"\nUser Created Successfully\n"<<termcolor::reset;
+    cout << termcolor::green << "\n User created successfully!\n" << termcolor::reset;
     Sleep(3000);
 }
