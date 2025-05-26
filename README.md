@@ -4,27 +4,6 @@ A console-based Bank Management System built in C++ using object-oriented princi
 
 ---
 
-## 📁 Project Structure
-
-.
-├── include/ # Header files
-│ ├── account.hpp
-│ ├── DoublyLinkedList.hpp
-│ ├── DoublyLinkedList.tpp
-│ ├── functions.hpp
-│ ├── hash.hpp
-│ └── termcolor.hpp
-├── src/ # Source code
-│ ├── account.cpp
-│ ├── functions.cpp
-│ └── main.cpp
-├── build/ # CMake build folder
-├── CMakeLists.txt
-└── README.md
-
-
----
-
 ## 🛠️ Features
 
 - Create and manage user bank accounts.
