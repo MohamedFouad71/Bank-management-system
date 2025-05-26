@@ -31,11 +31,10 @@ public:
     void removeLast();
     void removeAt(int index);
     t twoPointerSearch(t item);
-
+    user* searchAccount(const std::string& username);
 };
 
 
 
-#include "specialListDefinition.tpp"
 #include "DoublyLinkedList.tpp"
 #endif //DOUBLYLINKEDLIST_H

@@ -57,7 +57,7 @@ admin::admin(string name, string pass) : account(name, pass) {
 
 int user::lastUid = 100;
 user::user() : account(), balance(0.0) {
-    uid = ++lastUid;
+    cout<<"Created temperory user with uid "<<uid<<std::endl;
 }
 
 user::user(string name , string pass) : account(name , pass) {

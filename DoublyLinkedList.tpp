@@ -230,6 +230,7 @@ t DoublyLinkedList<t>::twoPointerSearch(t item){
         unsigned int counter = 0;
         if(isEmpty()){
                 throw std::runtime_error("Cannot search an empty list");
+                return;
         }
 
         while( counter != length/2 + 1) {
@@ -249,25 +250,37 @@ t DoublyLinkedList<t>::twoPointerSearch(t item){
         throw std::runtime_error("Item not found");
 }
 
-// template <>
-// user DoublyLinkedList<user>::twoPointerSearch(std::string name) {
+template <class t>
+user* DoublyLinkedList<t>::searchAccount(const std::string& username) {
 
-//     if (this->isEmpty())
-//         throw std::runtime_error("List is empty");
+    if (isEmpty()) {
+        throw std::runtime_error("Cannot search an empty list");
+    }
 
-//     node *forward = this->first;
-//     node *backward = this->last;
+    // Search from both ends simultaneously
+    node* front = first;
+    node* back = last;
+    short int counter = 0 ;
+    while (counter != length/2 + 1) {
+        // Check front pointer
+        if ((front->value).getUserName() == username) {   
+                
+            user* returned = &(front->value);    
+            return returned;
+        }
+        
+        // Check back pointer
+        if ((back->value).getUserName() == username) {
 
-//     for (int i = 0; i <= this->length / 2; ++i) {
-
-//         if (forward->value.getUserName() == name)
-//             return forward->value;
-//         if (backward->value.getUserName() == name)
-//             return backward->value;
-
-//         forward = forward->next;
-//         backward = backward->previous;
-//     }
-
-//     throw std::runtime_error("User not found");
-// }
+            user *returned = &(back->value);    
+            return returned;
+        }        
+        
+        // Move pointers toward center
+        front = front->next;
+        back = back->previous;
+    }
+    
+    throw std::runtime_error("Not Found");
+  // Not found
+}
