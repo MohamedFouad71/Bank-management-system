@@ -1,8 +1,25 @@
-#include <iostream>
 #include "account.hpp"
 #include "termcolor.hpp"
+#include "DoublyLinkedList.hpp"
+#include <iostream>
+#include <limits>
+
 using namespace std;
 
+
+extern DoublyLinkedList<user> userHashTable[52][52];
+
+int mazeHashing(std::string &name , int characterPosition , bool nothing = false){
+
+    const char character = name.at(characterPosition);
+    if (character >= 'A' && character <= 'Z') // checking if the character is uppercase
+    {
+        return int(character) - 65 ;
+    }
+    else {
+        return int(character) - 71 ; // Start from index 26 for more searching effectioncy
+    }
+}
 
 // ############################# Account Class ##########################################
 account::account() :uid(-1) , userName("Unknown") , password(""){}
@@ -57,7 +74,7 @@ admin::admin(string name, string pass) : account(name, pass) {
 
 int user::lastUid = 100;
 user::user() : account(), balance(0.0) {
-    cout<<"Created temperory user with uid "<<uid<<std::endl;
+    cout<<"Created temporary user with uid "<<uid<<std::endl;
 }
 
 user::user(string name , string pass) : account(name , pass) {
@@ -65,20 +82,41 @@ user::user(string name , string pass) : account(name , pass) {
     balance = 0.0;
 }
 
-void user::depose(double value)
+void user::depose()
 {
+    double value;
+    cout<<termcolor::blue<<"Amount of money : "<<termcolor::bright_blue;
+
+    if (!(cin >> value)) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cerr << termcolor::red << "\nInvalid input: Not a number\n" << termcolor::reset;
+        return;
+    }
+
     if (value <= 0){
         cerr<<termcolor::red<<"Invalid value\n"<<termcolor::reset;
     }
     else {
         balance += value;
         cout<<termcolor::green<<"Successfully Added "<<termcolor::bright_yellow<<value<<termcolor::green
-        <<" To Your Account!! Your Current Balance is : "<<termcolor::bright_yellow<<balance<<termcolor::reset;
-
+        <<" To Your Account!! Your Current Balance is : "<<termcolor::bright_yellow<<to_string(balance)<<termcolor::reset<<endl;
     }
+    
 }
 
-void user::withdraw(double value){
+void user::withdraw(){
+
+    double value;
+    cout<<termcolor::blue<<"Amount of money : "<<termcolor::bright_blue;
+
+    if (!(cin >> value)) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cerr << termcolor::red << "\nInvalid input: Not a number\n" << termcolor::reset;
+        return;
+    }
+
 
     if (value <= 0){
         cerr<<termcolor::red<<"\nInvalid value\n"<<termcolor::reset;
@@ -89,8 +127,59 @@ void user::withdraw(double value){
     else {
         balance -= value;
         cout<<termcolor::green<<"Successfully Withdrawn "<<termcolor::bright_yellow<<value<<termcolor::green
-        <<" From Your Account!! Your Current Balance is : "<<termcolor::bright_yellow<<balance<<termcolor::reset;
+        <<" From Your Account!! Your Current Balance is : "<<termcolor::bright_yellow<<to_string(balance)<<termcolor::reset<<std::endl;
     }
+}
+
+void user::changeUsername()
+{
+    cout<<termcolor::blue<<"New Username : "<<termcolor::bright_blue<<endl;
+    string uname;
+    cin>>uname;
+    
+    if (uname.length() < 6){
+        cerr<<termcolor::red<<"\nToo Short\n";
+        return;
+    }
+    else{
+        cerr << termcolor::red << "\nError: First two characters must be alphabetic\n" ;
+        return;
+    }
+
+    try
+    {
+        int index1 = mazeHashing(uname, 0), index2 =mazeHashing(uname , 1);
+        DoublyLinkedList<user> *searchedList = &(userHashTable[index1][index2]);
+        searchedList->searchAccount(uname);
+        cerr<<termcolor::red<<"Username Already Used!!\n";
+    }
+    catch(...) // if not found
+    {
+        this->userName = uname;
+    }
+
+}
+
+void user::changePassword()
+{
+    string newPass;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout<<termcolor::blue<<"New Password : ";
+    getline(cin , newPass);
+
+    // Validate password length
+    if (newPass.size() < 8) {
+        cerr << termcolor::red << "\nToo Short, Minimum 8 characters\n"<<termcolor::reset;
+    }
+    else{
+        password = newPass;
+        cout<<termcolor::green<<"Password Reset !!\n"<<termcolor::reset;
+    }
+}
+
+double user::getBalance() const
+{
+    return balance;
 }
 
 void user::viewInfo() const{
@@ -100,7 +189,7 @@ void user::viewInfo() const{
         return;
     }
 
-    cout << termcolor::blue
+    cout << termcolor::green
          << "\n==================== User Information ====================\n"
          << "Name    : " << userName << endl
          << "UID     : " << uid << endl

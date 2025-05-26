@@ -24,8 +24,7 @@ void login() {
         cout << termcolor::blue << "\nWelcome to Our Bank\n\n";
         cout << termcolor::yellow << "1 - Create user\n";
         cout << termcolor::yellow << "2 - Login as user\n";
-        cout << termcolor::yellow << "3 - Login as admin\n";
-        cout << termcolor::yellow << "4 - Exit\n" << termcolor::reset;
+        cout << termcolor::yellow << "3 - Exit\n" << termcolor::reset;
         
         unsigned short choice;
         cout <<termcolor::blue<< "\nEnter choice: "<<termcolor::bright_blue;
@@ -45,11 +44,8 @@ void login() {
                 userLogin();
                 break;
             case 3:
-                create(true); // Admin account creation
-                break;
-            case 4:
                 cout << "Exiting...\n";
-                return;
+                exit(0);
             default:
                 cerr << termcolor::red << "Invalid choice!\n" << termcolor::reset;
         } 
@@ -94,8 +90,7 @@ void userLogin()
     for (size_t counter = 0; counter<5 ; counter++){
 
         // Getting Password
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout<<termcolor::blue<<"Password : ";
+        cout<<termcolor::blue<<"Password : "<<termcolor::bright_blue;
         getline(cin, password);
 
         if (password == loggedInUser->getPassword()){
@@ -104,15 +99,19 @@ void userLogin()
                 clearScreen();
                 cout<<termcolor::green<<"Successfully Logged In !!\n";
                 Sleep(1000);
+                clearScreen();
             }
             cout<<termcolor::green<<"Successfully Logged In !!\n";
-
+            bool run = true;
+            while(run){
+                run = userMainPage(loggedInUser);
+            }
+            
             return;
         }
 
         cout<<termcolor::red<<"wrong Password , Try again\n";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout<<termcolor::blue<<"\nPassword : ";
+        cout<<termcolor::blue<<"\nPassword : "<<termcolor::bright_blue;
         getline(cin, password);
 
     }
@@ -122,6 +121,64 @@ void userLogin()
 
 }
 
+bool userMainPage(user *LoggedInUser){
+
+    cout<<termcolor::blue
+    <<"\n==================================================================\n"
+    <<"                       Choose an Option                           "
+    <<"\n==================================================================\n"
+    <<termcolor::yellow
+    <<"1 - View Balance\n"
+    <<"2 - View Info\n"
+    <<"3 - Withdraw Money\n"
+    <<"4 - Depose Money\n"
+    <<"5 - Change Password\n"
+    <<"6 - Change Username\n"
+    <<"7 - Previous Page\n"
+    <<termcolor::blue
+    <<"Choice : ";
+    unsigned short int choice;
+
+    while (!(cin >> choice)) { // Handle non-numeric input
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cerr << termcolor::red << "\nInvalid input!\n" << termcolor::reset;
+
+        cout<<termcolor::blue<<"Choice : ";
+    }
+
+    switch (choice)
+    {
+    case 1 :
+        cout<<termcolor::green<<"Your Current Balance is "<< LoggedInUser->getBalance() << endl << termcolor::reset;
+        break;
+    case 2 :
+        clearScreen();
+        LoggedInUser->viewInfo();
+        Sleep(3000);
+        break;
+    case 3 :
+        LoggedInUser->withdraw();
+        Sleep(3000);
+        break;
+    case 4 :
+        LoggedInUser->depose();
+        Sleep(3000);
+        break;
+    case 5 : 
+        LoggedInUser->changePassword();
+        Sleep(3000);
+        break;
+    case 6 :
+        LoggedInUser->changeUsername();
+        break;
+    case 7 :;
+        return false; // Don't repeat
+    default :
+        cout<<termcolor::red<<"Invalid Choice\n"<<termcolor::reset<<endl;
+    }
+    return true ;
+}
 void create(bool adminstrator) {
 
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -130,8 +187,19 @@ void create(bool adminstrator) {
     getline(cin, username);
 
     // Validate username - first two chars must be letters
-    while (username.length() < 6 || !isalpha(username[0]) || !isalpha(username[1])) {
-
+    bool nameFound = false;
+    while (username.length() < 6 || !isalpha(username[0]) || !isalpha(username[1]) || nameFound) {
+    nameFound = false;
+    try
+    {
+        int index1 = mazeHashing(username, 0), index2 =mazeHashing(username , 1);
+        DoublyLinkedList<user> *searchedList = &(userHashTable[index1][index2]);
+        searchedList->searchAccount(username);
+        cerr<<termcolor::red<<"Username Already Used!!\n"<<termcolor::reset;
+        nameFound = true;
+    }
+    catch(...) // if not found
+    {
         if (username.length() < 6){
             cerr<<termcolor::red<<"\nToo Short\n";
         }
@@ -142,6 +210,8 @@ void create(bool adminstrator) {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << termcolor::blue<<"Username: "<<termcolor::bright_blue;
         getline(cin , username);
+    }
+
     }
 
     

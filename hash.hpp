@@ -4,7 +4,7 @@
 #include "account.hpp"
 
 extern DoublyLinkedList<admin> adminHashTable [100];
-extern DoublyLinkedList<user> hashTable[52][52];
+extern DoublyLinkedList<user> userHashTable[52][52];
 
 
 

@@ -39,8 +39,10 @@ class user : public account{
 
     user();
     user(std::string name , std::string pass);
-    void depose(double value);
-    void withdraw(double value);
+    void depose();
+    void withdraw();
+    void changeUsername();
+    void changePassword();
     double getBalance() const;
     void viewInfo() const;   
 };
